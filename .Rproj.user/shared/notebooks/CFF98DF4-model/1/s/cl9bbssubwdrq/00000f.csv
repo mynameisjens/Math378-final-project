@@ -1,0 +1,48 @@
+"0","X = get_dummies(df[['bill_length_mm', 'species', 'sex']], drop_first = True)"
+"0","y = df['body_mass_g']"
+"0",""
+"0","model = LinearRegression().fit(X, y)"
+"0","v = VetiverModel(model, model_name='penguin_model', prototype_data=X)"
+"0",""
+"0","b = board_folder('data/model', allow_pickle_read=True)"
+"0","vetiver_pin_write(b,v)"
+"2","Model Cards provide a framework for transparent, responsible reporting. 
+ Use the vetiver `.qmd` Quarto template as a place to start, 
+ with vetiver.model_card()"
+"2","
+"
+"2","Writing pin:
+Name: 'penguin_model'
+Version: 20240304T142621Z-a6f9b"
+"2","
+"
+"0","v = VetiverModel.from_pin(b, 'penguin_model')"
+"0",""
+"0","app = VetiverAPI(v, check_prototype=True)"
+"0","app.run(port = 8080)"
+"2","C:\Users\C25JEN~1.GAR\DOCUME~1\2023-2~1\FALLSE~1\MATH37~1\JENSEN~1\VENV~1\Lib\site-packages\vetiver\utils.py:18: UserWarning: You may be running from a notebook environment. Jupyter Notebooks are not considered stable environments for production code
+  warnings.warn(
+"
+"2","INFO:     Started server process [49640]
+"
+"2","INFO:     Waiting for application startup.
+INFO:     VetiverAPI starting...
+INFO:     Application startup complete.
+"
+"2","INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+"
+"1","INFO:     127.0.0.1:58368 - ""GET / HTTP/1.1"" 307 Temporary Redirect
+"
+"1","INFO:     127.0.0.1:58368 - ""GET /__docs__ HTTP/1.1"" 200 OK
+"
+"1","INFO:     127.0.0.1:58368 - ""GET /openapi.json HTTP/1.1"" 200 OK
+"
+"1","INFO:     127.0.0.1:58368 - ""GET /favicon.ico HTTP/1.1"" 404 Not Found
+"
+"2","INFO:     Shutting down
+"
+"2","INFO:     Waiting for application shutdown.
+"
+"2","INFO:     Application shutdown complete.
+INFO:     Finished server process [49640]
+"
