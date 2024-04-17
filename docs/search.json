@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "model.html",
+    "href": "model.html",
+    "title": "Model",
+    "section": "",
+    "text": "Code\n#library(reticulate)\n#py_config()\n#use_python(\".venv/Scripts/python.exe\")\n#use_virtualenv(\".venv\")\nCode\nfrom palmerpenguins import penguins\nfrom pandas import get_dummies\nimport numpy as np\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn import preprocessing\n\nfrom vetiver import VetiverModel\nfrom vetiver import VetiverAPI\nfrom vetiver import vetiver_pin_write\nfrom vetiver import prepare_docker\nfrom pins import board_folder"
+  },
+  {
+    "objectID": "model.html#get-data",
+    "href": "model.html#get-data",
+    "title": "Model",
+    "section": "Get Data",
+    "text": "Get Data\n\n\nCode\nimport duckdb\n\ndf = penguins.load_penguins().dropna()\n\ncon = duckdb.connect('my-db.duckdb')\ndf = con.execute(\"SELECT * FROM penguins\").fetchdf().dropna()\n\n#con.close()"
+  },
+  {
+    "objectID": "model.html#define-model-and-fit",
+    "href": "model.html#define-model-and-fit",
+    "title": "Model",
+    "section": "Define Model and Fit",
+    "text": "Define Model and Fit\n\n\nCode\nX = get_dummies(df[['bill_length_mm', 'species', 'sex']], drop_first = True)\ny = df['body_mass_g']\n\nmodel = LinearRegression().fit(X, y)\nv = VetiverModel(model, model_name='penguin_model', prototype_data=X)\n\nb = board_folder('data/model', allow_pickle_read=True)\nvetiver_pin_write(b,v)\n\n\nModel Cards provide a framework for transparent, responsible reporting. \n Use the vetiver `.qmd` Quarto template as a place to start, \n with vetiver.model_card()\nWriting pin:\nName: 'penguin_model'\nVersion: 20240417T144431Z-a6f9b\n\n\nCode\nv = VetiverModel.from_pin(b, 'penguin_model', version = '20240306T192302Z-a6f9b')\n\napp = VetiverAPI(v, check_prototype=True)\n#app.run(port = 8080)\n\n\n\n\nCode\nimport vetiver\n\nmodel_board = \"C:/Users/C25Jensen.Garcia/Documents/2023-2024/Fall semester/Math 378/Jensen's Math378 Final project\"\n#vetiver.prepare_docker(b, \"penguin_model\")\n\n\n##Call model API from code\n\n\nCode\n#import requests\n\n#req_data = {\n # \"bill_length_mm\": 0,\n  #\"species_Chinstrap\": False,\n  #\"species_Gentoo\": False,\n  #\"sex_male\": False\n#}\n#req = requests.post('http://127.0.0.1:8080/predict', json = [req_data])\n#res = req.json().get('predict')[0]"
+  },
+  {
+    "objectID": "model.html#get-some-information",
+    "href": "model.html#get-some-information",
+    "title": "Model",
+    "section": "Get some information",
+    "text": "Get some information\n\n\nCode\nprint(f\"R^2 {model.score(X,y)}\")\n\n\nR^2 0.8555368759537614\n\n\nCode\nprint(f\"Intercept {model.intercept_}\")\n\n\nIntercept 2169.269720939398\n\n\nCode\nprint(f\"Columns {X.columns}\")\n\n\nColumns Index(['bill_length_mm', 'species_Chinstrap', 'species_Gentoo', 'sex_male'], dtype='object')\n\n\nCode\nprint(f\"Coefficients {model.coef_}\")\n\n\nCoefficients [  32.53688677 -298.76553447 1094.86739145  547.36692408]\n\n\n\n\nCode\n#import logging\n\n#logging.basicConfig(\n    #format='%(asctime)s - %(message)s',\n    #level=logging.INFO\n#)\n\n\n\n\nCode\n#def server(input, output, session):\n#    logging.info(\"App start\")\n\n #   @reactive.Calc\n  #  def vals():\n   #     d = {\n    #        \"bill_length_mm\" : input.bill_length(),\n     #       \"sex_male\" : input.sex() == \"Male\",\n      #      \"species_Gentoo\" : input.species() == \"Gentoo\", \n       #     \"species_Chinstrap\" : input.species() == \"Chinstrap\"\n#\n #       }\n  #      return d\n   # \n    #@reactive.Calc\n    #@reactive.event(input.predict)\n    #def pred():\n     #   logging.info(\"Request Made\")\n      #  r = requests.post(api_url, json = [vals()])\n       # logging.info(\"Request Returned\")\n#\n #       if r.status_code != 200:\n  #          logging.error(\"HTTP error returned\")\n#\n #       return r.json().get('predict')[0]\n#\n #   @output\n  #  @render.text\n   # def vals_out():\n    #    return f\"{vals()}\"\n\n    #@output\n    #@render.text\n    #def pred_out():\n     #   return f\"{round(pred())}\"\n\n\n\n\nCode\ncon.close()"
+  },
+  {
+    "objectID": "Git/mingw64/share/licenses/c-ares/LICENSE.html",
+    "href": "Git/mingw64/share/licenses/c-ares/LICENSE.html",
+    "title": "c-ares license",
+    "section": "",
+    "text": "c-ares license\nMIT License\nCopyright (c) 1998 Massachusetts Institute of Technology Copyright (c) 2007 - 2023 Daniel Stenberg with many contributors, see AUTHORS file.\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Penguins EDA",
+    "section": "",
+    "text": "Code\nlibrary(palmerpenguins)\nlibrary(dplyr)\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\n\nCode\nlibrary(ggplot2)\nlibrary(DBI)\nlibrary(dbplyr)\n\n\n\nAttaching package: 'dbplyr'\n\n\nThe following objects are masked from 'package:dplyr':\n\n    ident, sql\n\n\nCode\nlibrary(log4r)\n\n\n\nAttaching package: 'log4r'\n\n\nThe following object is masked from 'package:base':\n\n    debug\n\n\nCode\ndf &lt;- palmerpenguins::penguins \n#con &lt;- DBI::dbConnect(duckdb::duckdb(), dbdir = \"my-db.duckdb\")\n#DBI::dbWriteTable(con, \"penguins\", palmerpenguins::penguins)\n#DBI::dbDisconnect(con, shutdown = TRUE)\n\ncon &lt;- DBI::dbConnect(\n  duckdb::duckdb(), \n  dbdir = \"my-db.duckdb\"\n  )\ndf &lt;- dplyr::tbl(con, \"penguins\")\n#DBI::dbDisconnect(con)\n\n\n\n\nCode\n#df %&gt;%\n  #group_by(species, sex) %&gt;%\n  #summarise(\n    #across(\n      #where(is.numeric), \n      #\\(x) mean(x, na.rm = TRUE)\n      #)\n    #) %&gt;%\n  #knitr::kable()"
+  },
+  {
+    "objectID": "index.html#penguin-size-and-mass-by-sex-and-species",
+    "href": "index.html#penguin-size-and-mass-by-sex-and-species",
+    "title": "Penguins EDA",
+    "section": "",
+    "text": "Code\nlibrary(palmerpenguins)\nlibrary(dplyr)\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\n\nCode\nlibrary(ggplot2)\nlibrary(DBI)\nlibrary(dbplyr)\n\n\n\nAttaching package: 'dbplyr'\n\n\nThe following objects are masked from 'package:dplyr':\n\n    ident, sql\n\n\nCode\nlibrary(log4r)\n\n\n\nAttaching package: 'log4r'\n\n\nThe following object is masked from 'package:base':\n\n    debug\n\n\nCode\ndf &lt;- palmerpenguins::penguins \n#con &lt;- DBI::dbConnect(duckdb::duckdb(), dbdir = \"my-db.duckdb\")\n#DBI::dbWriteTable(con, \"penguins\", palmerpenguins::penguins)\n#DBI::dbDisconnect(con, shutdown = TRUE)\n\ncon &lt;- DBI::dbConnect(\n  duckdb::duckdb(), \n  dbdir = \"my-db.duckdb\"\n  )\ndf &lt;- dplyr::tbl(con, \"penguins\")\n#DBI::dbDisconnect(con)\n\n\n\n\nCode\n#df %&gt;%\n  #group_by(species, sex) %&gt;%\n  #summarise(\n    #across(\n      #where(is.numeric), \n      #\\(x) mean(x, na.rm = TRUE)\n      #)\n    #) %&gt;%\n  #knitr::kable()"
+  },
+  {
+    "objectID": "index.html#penguin-size-vs-mass-by-species",
+    "href": "index.html#penguin-size-vs-mass-by-species",
+    "title": "Penguins EDA",
+    "section": "Penguin Size vs Mass by Species",
+    "text": "Penguin Size vs Mass by Species\n\n\nCode\ndf %&gt;%\n  ggplot(aes(x = bill_length_mm, y = body_mass_g, color = species)) +\n  geom_point() + \n  geom_smooth(method = \"lm\")\n\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\nWarning: Removed 2 rows containing non-finite outside the scale range\n(`stat_smooth()`).\n\n\nWarning: Removed 2 rows containing missing values or values outside the scale range\n(`geom_point()`)."
+  },
+  {
+    "objectID": "index.html#build-shiny-app",
+    "href": "index.html#build-shiny-app",
+    "title": "Penguins EDA",
+    "section": "Build Shiny app",
+    "text": "Build Shiny app\n\n\nCode\n#library(shiny)\n\n#api_url &lt;- \"http://127.0.0.1:8080/predict\"\n\n#ui &lt;- fluidPage(\n  #titlePanel(\"Penguin Mass Predictor\"),\n\n  # Model input values\n  #sidebarLayout(\n    #sidebarPanel(\n      #sliderInput(\n        #\"bill_length\",\n        #\"Bill Length (mm)\",\n        #min = 30,\n        #max = 60,\n        #value = 45,\n        #step = 0.1\n      #),\n      #selectInput(\n        #\"sex\",\n        #\"Sex\",\n        #c(\"Male\", \"Female\")\n      #),\n      #selectInput(\n        #\"species\",\n        #\"Species\",\n        #c(\"Adelie\", \"Chinstrap\", \"Gentoo\")\n      #),\n      # Get model predictions\n      #actionButton(\n        #\"predict\",\n        #\"Predict\"\n      #)\n    #),\n\n    #mainPanel(\n      #h2(\"Penguin Parameters\"),\n      #verbatimTextOutput(\"vals\"),\n      #h2(\"Predicted Penguin Mass (g)\"),\n      #textOutput(\"pred\")\n    #)\n  #)\n#)\n\n#server &lt;- function(input, output) {\n  # Input params\n  #vals &lt;- reactive(\n    #list(\n      #bill_length_mm = input$bill_length,\n      #species_Chinstrap = input$species == \"Chinstrap\",\n      #species_Gentoo = input$species == \"Gentoo\",\n      #sex_male = input$sex == \"Male\"\n    #)\n  #)\n\n  # Fetch prediction from API\n  #pred &lt;- eventReactive(\n    #input$predict,\n    #httr2::request(api_url) |&gt;\n      #httr2::req_body_json(list(vals())) |&gt;\n      #httr2::req_perform() |&gt;\n      #httr2::resp_body_json(),\n    #ignoreInit = TRUE\n  #)\n\n  # Render to UI\n  #output$pred &lt;- renderText(pred()$predict[[1]])\n  #output$vals &lt;- renderPrint(vals())\n#}\n\n# Run the application\n#shinyApp(ui = ui, server = server)\n\n\n\n\nCode\n#server &lt;- function(input, output) {\n # log &lt;- log4r::logger()\n  #log4r::info(log, \"App Started\")\n  # Input params\n  #vals &lt;- reactive(\n   # list(\n    #  bill_length_mm = input$bill_length,\n     # species_Chinstrap = input$species == \"Chinstrap\",\n      #species_Gentoo = input$species == \"Gentoo\",\n      #sex_male = input$sex == \"Male\"\n    #)\n  #)\n\n  # Fetch prediction from API\n  #pred &lt;- eventReactive(\n   # input$predict,\n    #{\n     # log4r::info(log, \"Prediction Requested\")\n      #r &lt;- httr2::request(api_url) |&gt;\n       # httr2::req_body_json(list(vals())) |&gt;\n        #httr2::req_perform()\n      #log4r::info(log, \"Prediction Returned\")\n\n      #if (httr2::resp_is_error(r)) {\n       # log4r::error(log, paste(\"HTTP Error\"))\n      #}\n\n      #httr2::resp_body_json(r)\n    #},\n    #ignoreInit = TRUE\n  #)\n\n  # Render to UI\n  #output$pred &lt;- renderText(pred()$predict[[1]])\n  #output$vals &lt;- renderPrint(vals())\n#}\n\n\n\n\nCode\nDBI::dbDisconnect(con, shutdown = TRUE)"
+  }
+]
