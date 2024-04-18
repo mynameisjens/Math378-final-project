@@ -1,0 +1,11 @@
+---
+title: "Ch.3 lab"
+format: html
+editor: visual
+---
+
+## 
+
+```{r}
+
+```

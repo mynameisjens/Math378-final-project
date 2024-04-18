@@ -1,0 +1,27 @@
+"0","library(palmerpenguins)"
+"0","library(dplyr)"
+"0","library(ggplot2)"
+"0","library(DBI)"
+"0","library(dbplyr)"
+"0","library(log4r)"
+"2","
+Attaching package: ‘log4r’
+
+"
+"2","The following object is masked from ‘package:base’:
+
+    debug
+
+"
+"0","df <- palmerpenguins::penguins "
+"0","#con <- DBI::dbConnect(duckdb::duckdb(), dbdir = ""my-db.duckdb"")"
+"0","#DBI::dbWriteTable(con, ""penguins"", palmerpenguins::penguins)"
+"0","#DBI::dbDisconnect(con, shutdown = TRUE)"
+"0",""
+"0","con <- DBI::dbConnect("
+"0","  duckdb::duckdb(), "
+"0","  dbdir = ""my-db.duckdb"""
+"0","  )"
+"0","df <- dplyr::tbl(con, ""penguins"")"
+"0","#DBI::dbDisconnect(con)"
+"0",""

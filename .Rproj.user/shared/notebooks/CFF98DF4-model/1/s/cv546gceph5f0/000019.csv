@@ -1,0 +1,5 @@
+"0","quit"
+"0","#library(reticulate)"
+"0","#py_config()"
+"0","#use_python("".venv/Scripts/python.exe"")"
+"0","#use_virtualenv("".venv"")"

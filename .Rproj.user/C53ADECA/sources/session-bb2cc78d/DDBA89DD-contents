@@ -1,0 +1,161 @@
+#
+# Data Prep
+#
+
+#
+# Note: Execute each line of code either by placing your cursor at the 
+# beginning of the line, and then pressing the "Run" button (above) or 
+# pressing CTRL+ENTER on your keyboard
+
+# Step 0: Installing Packages
+# Let's install all of the packages you will need for this course now.
+# After installing them, go to the Packages tab (lower right) and install
+# all the recommended updates.
+#install.packages("caret")
+#install.packages("readxl")
+#install.packages("writexl")
+#install.packages("pROC")
+#install.packages("rpart")
+#install.packages("rpart.plot")
+#install.packages("e1071")
+
+
+# Step 1: Loading Packages
+library("readxl")
+
+# Step 2: Read in data
+df = read_xlsx("19. Restaurant Reviews.xlsx", sheet = "data")
+df = as.data.frame(df)
+
+# Step 3: See a quick summary of the data
+summary(df)
+
+# Step 4: Which rows have one or more missing values?
+df[!complete.cases(df),]
+
+# Step 5: What happens if we remove all rows that have a missing value?
+df.omit = df[complete.cases(df),]
+
+# Compare the average rating for each variable using all the data vs
+# with omission.
+# Note: All data is a bit misleading because we need to omit missing values
+# within each column to calculate the average. However, with omission, we delete
+# the entire row whenever one of the variables has a missing value.
+output.comp = matrix(c(mean(df$Ambience, na.rm = TRUE), 
+  mean(df$Cleanliness, na.rm = TRUE), 
+  mean(df$Service, na.rm = TRUE),
+  mean(df$Food, na.rm = TRUE),
+  mean(df.omit$Ambience), 
+  mean(df.omit$Cleanliness),
+  mean(df.omit$Service),
+  mean(df.omit$Food)),
+  nrow = 4,
+  ncol = 2)
+colnames(output.comp) = c("All", "Omission")
+rownames(output.comp) = names(df)[5:8]
+output.comp = as.data.frame(output.comp)
+View(output.comp)
+# Discussion: What do you see?
+
+# Step 6: Use AVERAGE value imputation for numerical variables
+df.impute = df
+df.impute$Ambience[is.na(df.impute$Ambience)] = mean(df.impute$Ambience, na.rm = TRUE)
+df.impute$Cleanliness[is.na(df.impute$Cleanliness)] = mean(df.impute$Cleanliness, na.rm = TRUE)
+df.impute$Service[is.na(df.impute$Service)] = mean(df.impute$Service, na.rm = TRUE)
+df.impute$Food[is.na(df.impute$Food)] = mean(df.impute$Food, na.rm = TRUE)
+
+# We have to be careful with imputing LoyaltyTime. Why might we not want to 
+# use the average for all missing values?
+
+# Step 7: Use FIXED VALUE imputation for categorical variables
+df.impute$Gender[is.na(df.impute$Gender)] = "Unknown"
+df.impute$LoyaltyStatus[is.na(df.impute$LoyaltyStatus)] = "No Status"
+df.impute$LoyaltyTime[is.na(df.impute$LoyaltyTime)] = 0
+
+# Compare all options: All Data vs. Omission vs. Imputation
+output.comp$Imputation = c(mean(df.impute$Ambience),
+                           mean(df.impute$Cleanliness),
+                           mean(df.impute$Service),
+                           mean(df.impute$Food))
+View(output.comp)
+
+# Which approach seems better? Why
+
+
+# Step 8: Why does this matter?
+# Suppose the restaurant wants to know whether customers with different 
+# loyalty status tend to receive different levels of service...
+boxplot(df.omit$Service ~ df.omit$LoyaltyStatus, col="orange", main="Using Omission", ylab="Service Rating", xlab="Loyalty Status") 
+boxplot(df.impute$Service ~ df.impute$LoyaltyStatus, col="light blue", main="Using Imputation", ylab="Service Rating", xlab="Loyalty Status") 
+
+# What would the restaurant conclude using the first (orange colored) boxplot?
+# What would the restaurant conclude using the first (blue colored) boxplot?
+
+# Suppose the restaurant wants to know which gender thinks the ambiance is 
+# lacking so that they can make changes with male, female or neutral sensibilities
+# in mind...
+boxplot(df.omit$Ambience ~ df.omit$Gender, col="orange", main="Using Omission", ylab="Ambience Rating", xlab="Gender") 
+boxplot(df.impute$Ambience ~ df.impute$Gender, col="light blue", main="Using Imputation", ylab="Ambience Rating", xlab="Gender") 
+
+# What would the restaurant conclude using the first (orange colored) boxplot?
+# What would the restaurant conclude using the first (blue colored) boxplot?
+
+#
+# BACK TO LESSON SLIDES
+#
+
+# Step 9: Are there any outliers?
+# Let's look at the summary again.
+summary(df.impute)
+# Look at the min and max of each rating. Given that the expected range is 1-7,
+# are there any outliers?
+
+# Let's take a closer look at LoyaltyTime...
+boxplot(df.impute$LoyaltyTime ~ df.impute$LoyaltyStatus, col="light blue", 
+        main="Distribution of Time in Loyalty Program", ylab="Years", xlab="Loyalty Status")
+
+# What should we do about there extreme value? Why?
+
+# Option 1: Do noting
+df.outlier = df.impute
+
+# Option 2: Omission
+df.outlier = df[-which(df.impute$LoyaltyTime>20),]
+
+# Option 3: Imputation (average all LoyaltyTime values)
+df.outlier = df.impute
+df.outlier$LoyaltyTime[which(df.outlier$LoyaltyTime>20)] = 
+  mean(df.impute$LoyaltyTime[which(df.impute$LoyaltyTime<=20)])
+
+# Option 4: Imputation (average LoyaltyTime values for Platinum members)
+df.outlier = df.impute
+df.outlier$LoyaltyTime[which(df.outlier$LoyaltyTime>20)] = 
+  mean(df.impute$LoyaltyTime[which(df.impute$LoyaltyTime<=20 &
+                                   df.impute$LoyaltyStatus=="Platinum")])
+
+# Let's check Income after the change (if applicable)...
+boxplot(df.outlier$LoyaltyTime ~ df.outlier$LoyaltyStatus, col="light blue", 
+        main="Distribution of Time in Loyalty Program", ylab="Years", xlab="Loyalty Status")
+
+
+#
+# BACK TO LESSON SLIDES
+#
+
+# Step 10: Dealing with factors
+# Check the data types of the variables in our data
+str(df)
+
+# We can convert character data into factors by using the as.factor function
+df.factors = df
+df.factors$Gender = as.factor(df$Gender)
+df.factors$LoyaltyStatus = as.factor(df$LoyaltyStatus)
+
+# Now look at the data types
+str(df.factors)
+
+# And better yet, since R keeps track of factors (kind of like how Access
+# keeps track of primary keys), you can get value counts in the summary
+#output
+summary(df.factors)
+
